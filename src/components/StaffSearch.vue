@@ -10,10 +10,32 @@
     <div id="searchResults">
       <h3>Results for "{{ query }}"</h3>
       <section>
-        <div class="row" v-for="result in results" :key="result.userid">
-          <p>Name: {{ result.preferred_name }} {{ result.surname }}, user ID: {{ result.userid }}</p>
-          <p>{{ result.position_title }}, {{ result.phone }}</p>
-        </div>
+        <p id="messageArea" v-if="errors && errors.length">
+          {{ errors }}
+        </p>
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Name &amp; Title</th>
+                    <th style="width: 25%;">Phone number</th>
+                    <th style="width: 25%;">Team &amp; Branch</th>
+                    <th style="width: 20%;">Location</th>
+                </tr>
+            </thead>
+            <tbody id="listContents">
+              <tr
+                is="result-row"
+                v-for="result in results"
+                :key="result.userid"
+                v-bind:result="result"
+              ></tr>
+              <!-- <result-row
+                v-for="result in results"
+                :key="result.userid"
+                v-bind:result="result"
+              ></result-row> -->
+            </tbody>
+        </table>
       </section>
     </div>
   </div>
@@ -21,6 +43,7 @@
 
 <script>
 import Axios from 'axios';
+import ResultRow from './ResultRow';
 
 const baseApiUrl = 'http://localhost:3000/api/v1';
 
@@ -37,6 +60,9 @@ export default {
   mounted() {
     // this.getQueryString();
     // Or will the Vue router do this for me?
+    // if (this.queryFromUrl) {
+    //   this.searchForStaff(queryFromUrl);
+    // }
   },
   methods: {
     async searchForStaff(query) {
@@ -44,11 +70,29 @@ export default {
       try {
         const response = await Axios.get(queryUrl);
         this.results = response.data;
-        console.dir(this.results); // eslint-disable-line
+        // console.dir(this.results); // eslint-disable-line
       } catch (err) {
         console.error(err); // eslint-disable-line
         this.errors.push(err);
       }
+    },
+  },
+  computed: {
+    queryFromUrl() {
+      if (this.$router.query && this.$router.query.q) {
+        // return this.$router.params.q;
+        this.query = this.$router.query.q.trim();
+      // } else {
+      //   return false;
+      }
+    },
+  },
+  components: {
+    ResultRow,
+  },
+  watch: {
+    $router(before, after) {
+      console.dir(before, after); // eslint-disable-line
     },
   },
 };
