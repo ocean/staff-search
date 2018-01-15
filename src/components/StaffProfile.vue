@@ -1,56 +1,54 @@
 <template>
   <div class="staffProfile">
     <h2>Staff Profile</h2>
-    <!-- <div id="searchFormContainer">
-      <form id="searchForm" @submit="searchForStaff(query)" v-on:submit.prevent>
-        <input v-model="query" placeholder="Type your search">
-        <input type="submit" value="Search" id="searchButton">
-      </form>
-    </div> -->
     <div id="profileTable">
       <section>
+        <p id="messageArea" v-if="errors && errors.length">
+          {{ errors }}
+        </p>
         <table style="width: 100%;">
           <tbody>
             <tr>
               <td class="heading">Name</td>
-              <td>Name</td>
-              <td class="staffImage" rowspan="8"><img src="http://via.placeholder.com/120x120"></td>
+              <td> {{ profile.formattedName }}</td>
+              <td class="staffImage" rowspan="10"><img width="190" height="190" class="staffProfile" v-bind:src="profileImageSrc"></td>
             </tr>
             <tr>
               <td class="heading">Email</td>
-              <td>Email</td>
+              <td><a v-bind:href="'mailto:' + profile.formattedEmail">{{ profile.formattedEmail }}</a></td>
             </tr>
             <tr>
               <td class="heading">Phone</td>
-              <td>Phone</td>
+              <td>{{ profile.formattedPhone }}</td>
             </tr>
             <tr>
               <td class="heading">Mobile</td>
-              <td>Mobile</td>
+              <td v-if="profile.mobile">{{ profile.formattedMobile }}</td>
+              <td v-else>N/A</td>
             </tr>
             <tr>
               <td class="heading">Group</td>
-              <td>Group</td>
+              <td>{{ profile.grp }}</td>
             </tr>
             <tr>
               <td class="heading">Division</td>
-              <td>Division</td>
+              <td>{{ profile.div }}</td>
             </tr>
             <tr>
               <td class="heading">Branch</td>
-              <td>Branch</td>
+              <td>{{ profile.bran }}</td>
             </tr>
             <tr>
               <td class="heading">Section</td>
-              <td>Section</td>
+              <td>{{ profile.sect }}</td>
             </tr>
             <tr>
               <td class="heading">Position</td>
-              <td>Position</td>
+              <td>{{ profile.position_title }}</td>
             </tr>
             <tr>
               <td class="heading">Location</td>
-              <td>Location</td>
+              <td>{{ profile.location_name }}</td>
             </tr>
           </tbody>
         </table>
@@ -61,34 +59,48 @@
 
 <script>
 import Axios from 'axios';
+import Config from '../config';
 
-const baseApiUrl = 'http://localhost:3000/api/v1';
+const baseApiUrl = Config.baseApiUrl;
 
 export default {
   name: 'StaffProfile',
   data() {
     return {
       title: 'Staff Profile',
-      userid: '',
       profile: [],
       errors: [],
     };
   },
-  mounted() {
-    // this.getQueryString();
-    // Or will the Vue router do this for me?
-    // if (this.queryFromUrl) {
-    //   this.searchForStaff(queryFromUrl);
-    // }
-    this.loadProfile(this.$route.params.id);
+  props: {
+    userid: {
+      type: String,
+      required: true,
+    },
+  },
+  created() {
+    this.loadProfile();
+  },
+  watch: {
+    $route: 'loadProfile',
   },
   methods: {
-    async loadProfile(userid) {
-      const profileUrl = `${baseApiUrl}/census/employee/${userid}`;
+    async loadProfile() {
+      const profileUrl = `${baseApiUrl}/census/employee/${this.userid}`;
       try {
         const response = await Axios.get(profileUrl);
-        this.profile = response.data;
-        // console.dir(this.results); // eslint-disable-line
+        // This is not how it should work, but
+        // don't know why async computed properties
+        // are REFUSING to work  >:-|
+        const rawProfile = response.data;
+        rawProfile.formattedEmail = rawProfile.email.toLowerCase();
+        const upcaseSurname = rawProfile.surname.toUpperCase();
+        rawProfile.formattedName = `${upcaseSurname}, ${rawProfile.preferred_name}`;
+        const rawPhone = rawProfile.phone;
+        rawProfile.formattedPhone = `${rawPhone.slice(0, 4)} ${rawPhone.slice(4)}`;
+        const rawMobile = rawProfile.mobile;
+        rawProfile.formattedMobile = `${rawMobile.slice(0, 4)} ${rawMobile.slice(4, 7)} ${rawMobile.slice(7)}`;
+        this.profile = rawProfile;
       } catch (err) {
         console.error(err); // eslint-disable-line
         this.errors.push(err);
@@ -96,14 +108,9 @@ export default {
     },
   },
   computed: {
-    // queryFromUrl() {
-    //   if (this.$router.query && this.$router.query.q) {
-    //     // return this.$router.params.q;
-    //     this.query = this.$router.query.q.trim();
-    //   // } else {
-    //   //   return false;
-    //   }
-    // },
+    profileImageSrc() {
+      return `${baseApiUrl}/census/employee/${this.userid}/avatar?size=190`;
+    },
   },
 };
 </script>
@@ -137,7 +144,7 @@ th {
   font-size: 13px;
 }
 tbody td {
-  border-bottom: 1px solid #dae9f4;
+  /* border-bottom: 1px solid #dae9f4; */
   margin: 0;
   padding: 4px 2px 6px 2px;
   font-size: 13px;
@@ -150,5 +157,6 @@ td.heading {
 }
 td.staffImage {
   width: 36%;
+  border-bottom: 0;
 }
 </style>

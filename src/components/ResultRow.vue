@@ -1,10 +1,10 @@
 <template>
   <tr class="row">
     <td>
-      <router-link :to="{ path: `/person/${result.userid}`}">{{ staffFullName }}</router-link> ({{ result.userid }})<br>
+      <router-link :to="{ path: `/person/${lowerUserId}`}">{{ staffFullName }}</router-link><br>
       <span class="secondary">{{ result.position_title }}</span>
     </td>
-    <td>{{ formatPhone }}</td>
+    <td>{{ formattedPhone }}</td>
     <td>
       {{ result.sect }}<br>
       <span class="secondary">{{ result.bran }}</span>
@@ -19,18 +19,16 @@
 <script>
 export default {
   props: ['result'],
-  // data() {
-  //   return {
-  //     staffMember: this.$parent.result,
-  //   };
-  // },
   computed: {
     staffFullName() {
       const upcaseSurname = this.result.surname.toUpperCase();
       return `${upcaseSurname}, ${this.result.preferred_name}`;
     },
-    formatPhone() {
+    formattedPhone() {
       return `${this.result.phone.slice(0, 4)} ${this.result.phone.slice(4)}`;
+    },
+    lowerUserId() {
+      return this.result.userid.toLowerCase();
     },
   },
 };

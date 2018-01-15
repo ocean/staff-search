@@ -2,8 +2,8 @@
   <div class="staffSearch">
     <h2>{{ title }}</h2>
     <div id="searchFormContainer">
-      <form id="searchForm" @submit="searchForStaff(query)" v-on:submit.prevent>
-        <input v-model="query" placeholder="Type your search">
+      <form id="searchForm" @submit="updateQuery()" v-on:submit.prevent>
+        <input v-model="searchQuery" placeholder="Type your search">
         <input type="submit" value="Search" id="searchButton">
       </form>
     </div>
@@ -43,30 +43,33 @@
 
 <script>
 import Axios from 'axios';
+import Config from '../config';
 import ResultRow from './ResultRow';
 
-const baseApiUrl = 'http://localhost:3000/api/v1';
+const baseApiUrl = Config.baseApiUrl;
 
 export default {
   name: 'StaffSearch',
   data() {
     return {
       title: 'Staff Directory',
+      searchQuery: '',
       query: '',
       results: [],
       errors: [],
     };
   },
+  watch: {
+    $route: 'queryFromUrl',
+  },
   mounted() {
     // this.getQueryString();
     // Or will the Vue router do this for me?
-    // if (this.queryFromUrl) {
-    //   this.searchForStaff(queryFromUrl);
-    // }
+    this.queryFromUrl();
   },
   methods: {
-    async searchForStaff(query) {
-      const queryUrl = `${baseApiUrl}/census/employees/search?q=${query}`;
+    async searchForStaff() {
+      const queryUrl = `${baseApiUrl}/census/employees/search?q=${this.query}`;
       try {
         const response = await Axios.get(queryUrl);
         this.results = response.data;
@@ -76,24 +79,20 @@ export default {
         this.errors.push(err);
       }
     },
-  },
-  computed: {
     queryFromUrl() {
-      if (this.$router.query && this.$router.query.q) {
-        // return this.$router.params.q;
-        this.query = this.$router.query.q.trim();
-      // } else {
-      //   return false;
+      if (this.$route.query && this.$route.query.q) {
+        this.query = this.$route.query.q.trim();
+        this.searchQuery = this.query;
+        this.searchForStaff();
       }
+    },
+    updateQuery() {
+      this.query = this.searchQuery;
+      this.$router.push({ path: '/', query: { q: this.query } });
     },
   },
   components: {
     ResultRow,
-  },
-  watch: {
-    $router(before, after) {
-      console.dir(before, after); // eslint-disable-line
-    },
   },
 };
 </script>

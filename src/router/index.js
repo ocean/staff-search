@@ -11,11 +11,13 @@ export default new Router({
       path: '/',
       name: 'StaffSearch',
       component: StaffSearch,
+      props: true,
     },
     {
-      path: '/person/:id',
+      path: '/person/:userid',
       name: 'StaffProfile',
       component: StaffProfile,
+      props: true,
     },
   ],
 });
