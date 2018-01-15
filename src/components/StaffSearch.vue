@@ -1,14 +1,15 @@
 <template>
   <div class="staffSearch">
-    <h2>{{ title }}</h2>
+    <h3>{{ title }}</h3>
     <div id="searchFormContainer">
       <form id="searchForm" @submit="updateQuery()" v-on:submit.prevent>
         <input v-model="searchQuery" placeholder="Type your search">
         <input type="submit" value="Search" id="searchButton">
       </form>
+      <p>Tips: type some letters from either the staff member's first or last name, the search will look in both fields.</p>
     </div>
     <div id="searchResults">
-      <h3>Results for "{{ query }}"</h3>
+      <h3>Search results for "{{ query }}"</h3>
       <section>
         <p id="messageArea" v-if="errors && errors.length">
           {{ errors }}
@@ -43,16 +44,15 @@
 
 <script>
 import Axios from 'axios';
-import Config from '../config';
 import ResultRow from './ResultRow';
 
-const baseApiUrl = Config.baseApiUrl;
+const baseApiUrl = process.env.API_BASE_URL;
 
 export default {
   name: 'StaffSearch',
   data() {
     return {
-      title: 'Staff Directory',
+      title: 'Search for DMIRS staff',
       searchQuery: '',
       query: '',
       results: [],

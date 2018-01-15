@@ -59,9 +59,8 @@
 
 <script>
 import Axios from 'axios';
-import Config from '../config';
 
-const baseApiUrl = Config.baseApiUrl;
+const baseApiUrl = process.env.API_BASE_URL;
 
 export default {
   name: 'StaffProfile',
