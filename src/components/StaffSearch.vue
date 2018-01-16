@@ -1,14 +1,16 @@
 <template>
   <div class="staffSearch">
-    <h3>{{ title }}</h3>
+    <h3>Search for DMIRS staff</h3>
     <div id="searchFormContainer">
       <form id="searchForm" @submit="updateQuery()" v-on:submit.prevent>
-        <input v-model="searchQuery" placeholder="Type your search">
+        <label title="Type your staff search terms here">
+          <input v-model="searchQuery" placeholder="Type your search">
+        </label>
         <input type="submit" value="Search" id="searchButton">
       </form>
       <p>Tips: type some letters from either the staff member's first or last name, the search will look in both fields.</p>
     </div>
-    <div id="searchResults">
+    <div id="searchResults" v-if="query && query.length">
       <h3>Search results for "{{ query }}"</h3>
       <section>
         <p id="messageArea" v-if="errors && errors.length">
@@ -52,7 +54,6 @@ export default {
   name: 'StaffSearch',
   data() {
     return {
-      title: 'Search for DMIRS staff',
       searchQuery: '',
       query: '',
       results: [],

@@ -1,6 +1,6 @@
 <template>
   <div class="staffProfile">
-    <h2>Staff Profile</h2>
+    <h3>Details</h3>
     <div id="profileTable">
       <section>
         <p id="messageArea" v-if="errors && errors.length">
@@ -11,7 +11,7 @@
             <tr>
               <td class="heading">Name</td>
               <td> {{ profile.formattedName }}</td>
-              <td class="staffImage" rowspan="10"><img width="190" height="190" class="staffProfile" v-bind:src="profileImageSrc"></td>
+              <td class="staffImage" rowspan="10"><img width="250" height="250" class="staffProfile" v-bind:src="profileImageSrc" v-bind:alt="'Staff photo of ' + profile.formattedName"></td>
             </tr>
             <tr>
               <td class="heading">Email</td>
@@ -52,6 +52,7 @@
             </tr>
           </tbody>
         </table>
+        <p><a href="javascript:history.back();">&lt;- Back to search</a></p>
       </section>
     </div>
   </div>
@@ -66,7 +67,6 @@ export default {
   name: 'StaffProfile',
   data() {
     return {
-      title: 'Staff Profile',
       profile: [],
       errors: [],
     };
@@ -91,12 +91,13 @@ export default {
         // This is not how it should work, but
         // don't know why async computed properties
         // are REFUSING to work  >:-|
+        // console.dir(response.data); // eslint-disable-line
         const rawProfile = response.data;
         rawProfile.formattedEmail = rawProfile.email.toLowerCase();
         const upcaseSurname = rawProfile.surname.toUpperCase();
         rawProfile.formattedName = `${upcaseSurname}, ${rawProfile.preferred_name}`;
         const rawPhone = rawProfile.phone;
-        rawProfile.formattedPhone = `${rawPhone.slice(0, 4)} ${rawPhone.slice(4)}`;
+        rawProfile.formattedPhone = `${rawPhone.slice(-16, -12)} ${rawPhone.slice(-12, -8)} ${rawPhone.slice(-8, -4)} ${rawPhone.slice(-4)}`;
         const rawMobile = rawProfile.mobile;
         rawProfile.formattedMobile = `${rawMobile.slice(0, 4)} ${rawMobile.slice(4, 7)} ${rawMobile.slice(7)}`;
         this.profile = rawProfile;
@@ -108,7 +109,7 @@ export default {
   },
   computed: {
     profileImageSrc() {
-      return `${baseApiUrl}/census/employee/${this.userid}/avatar?size=190`;
+      return `${baseApiUrl}/census/employee/${this.userid}/avatar?size=250`;
     },
   },
 };
