@@ -140,14 +140,14 @@ thead tr {
   height: 50px;
   font-weight: bold;
 }
-th {
+/* th {
   font-size: 13px;
-}
+} */
 tbody td {
   /* border-bottom: 1px solid #dae9f4; */
   margin: 0;
   padding: 4px 2px 6px 2px;
-  font-size: 13px;
+  /* font-size: 13px; */
 }
 td {
   width: 45%;

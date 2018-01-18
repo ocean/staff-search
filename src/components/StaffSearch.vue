@@ -1,14 +1,14 @@
 <template>
   <div class="staffSearch">
-    <h3>Search for DMIRS staff</h3>
+    <!-- <h3>Search for DMIRS staff</h3> -->
     <div id="searchFormContainer">
       <form id="searchForm" @submit="updateQuery()" v-on:submit.prevent>
         <label title="Type your staff search terms here">
-          <input v-model="searchQuery" placeholder="Type your search">
+          <input v-model="searchQuery" placeholder="Type your search" size="35">
         </label>
-        <input type="submit" value="Search" id="searchButton">
+        <input type="submit" value="  Search  " id="searchButton">
       </form>
-      <p>Tips: type some letters from either the staff member's first or last name, the search will look in both fields.</p>
+      <!-- <p>Tips: type some letters from either the staff member's first or last name, the search will look in both fields.</p> -->
     </div>
     <div id="searchResults" v-if="query && query.length">
       <h3>Search results for "{{ query }}"</h3>
@@ -123,19 +123,28 @@ thead tr {
   height: 50px;
   font-weight: bold;
 }
-th {
+/* th {
   font-size: 13px;
-}
+} */
 tbody td {
   border-bottom: 1px solid #dae9f4;
   margin: 0;
   padding: 4px 2px 6px 2px;
-  font-size: 13px;
+  /* font-size: 13px; */
 }
-#searchForm table td {
+/* #searchForm table td {
   border: 0;
 }
 #searchForm tr {
   background-color: transparent;
+} */
+#staffSearch {
+  margin-top: 20px;
 }
+#searchForm input {
+  font-size: 1.25em;
+}
+/* #searchButton {
+  vertical-align: text-top;
+} */
 </style>
