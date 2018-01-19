@@ -1,6 +1,5 @@
 <template>
   <div class="staffSearch">
-    <!-- <h3>Search for DMIRS staff</h3> -->
     <div id="searchFormContainer">
       <form id="searchForm" @submit="updateQuery()" v-on:submit.prevent>
         <label title="Type your staff search terms here">
@@ -8,7 +7,6 @@
         </label>
         <input type="submit" value="  Search  " id="searchButton">
       </form>
-      <!-- <p>Tips: type some letters from either the staff member's first or last name, the search will look in both fields.</p> -->
     </div>
     <div id="searchResults" v-if="query && query.length">
       <h3>Search results for "{{ query }}"</h3>
@@ -19,9 +17,9 @@
         <table style="width: 100%;">
             <thead>
                 <tr>
-                    <th style="width: 25%;">Name &amp; Title</th>
+                    <th style="width: 25%;">Name &amp; Position</th>
                     <th style="width: 25%;">Phone number</th>
-                    <th style="width: 25%;">Team &amp; Branch</th>
+                    <th style="width: 25%;">Section &amp; Branch</th>
                     <th style="width: 20%;">Location</th>
                 </tr>
             </thead>
@@ -123,28 +121,16 @@ thead tr {
   height: 50px;
   font-weight: bold;
 }
-/* th {
-  font-size: 13px;
-} */
 tbody td {
   border-bottom: 1px solid #dae9f4;
   margin: 0;
   padding: 4px 2px 6px 2px;
   /* font-size: 13px; */
 }
-/* #searchForm table td {
-  border: 0;
-}
-#searchForm tr {
-  background-color: transparent;
-} */
 #staffSearch {
   margin-top: 20px;
 }
 #searchForm input {
   font-size: 1.25em;
 }
-/* #searchButton {
-  vertical-align: text-top;
-} */
 </style>

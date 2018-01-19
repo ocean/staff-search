@@ -11,7 +11,7 @@
             <tr>
               <td class="heading">Name</td>
               <td> {{ profile.formattedName }}</td>
-              <td class="staffImage" rowspan="10"><img width="250" height="250" class="staffProfile" v-bind:src="profileImageSrc" v-bind:alt="'Staff photo of ' + profile.formattedName"></td>
+              <td class="staffImage" rowspan="12"><img width="250" height="250" class="staffProfile" v-bind:src="profileImageSrc" v-bind:alt="'Staff photo of ' + profile.formattedName"></td>
             </tr>
             <tr>
               <td class="heading">Email</td>
@@ -21,26 +21,33 @@
               <td class="heading">Phone</td>
               <td>{{ profile.formattedPhone }}</td>
             </tr>
-            <tr>
+            <tr v-if="profile.mobile">
               <td class="heading">Mobile</td>
-              <td v-if="profile.mobile">{{ profile.formattedMobile }}</td>
-              <td v-else>N/A</td>
+              <td>{{ profile.formattedMobile }}</td>
             </tr>
-            <tr>
+            <tr v-if="profile.grp">
               <td class="heading">Group</td>
               <td>{{ profile.grp }}</td>
             </tr>
-            <tr>
+            <tr v-if="profile.div">
               <td class="heading">Division</td>
               <td>{{ profile.div }}</td>
             </tr>
-            <tr>
+            <tr v-if="profile.directorate">
+              <td class="heading">Directorate</td>
+              <td>{{ profile.directorate }}</td>
+            </tr>
+            <tr v-if="profile.bran">
               <td class="heading">Branch</td>
               <td>{{ profile.bran }}</td>
             </tr>
-            <tr>
+            <tr v-if="profile.sect">
               <td class="heading">Section</td>
               <td>{{ profile.sect }}</td>
+            </tr>
+            <tr v-if="profile.team">
+              <td class="heading">Team</td>
+              <td>{{ profile.team }}</td>
             </tr>
             <tr>
               <td class="heading">Position</td>
@@ -140,14 +147,10 @@ thead tr {
   height: 50px;
   font-weight: bold;
 }
-/* th {
-  font-size: 13px;
-} */
 tbody td {
-  /* border-bottom: 1px solid #dae9f4; */
+  border-bottom: 1px solid #dae9f4;
   margin: 0;
   padding: 4px 2px 6px 2px;
-  /* font-size: 13px; */
 }
 td {
   width: 45%;

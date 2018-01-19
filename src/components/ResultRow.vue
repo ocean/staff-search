@@ -4,7 +4,7 @@
       <router-link :to="{ path: `/person/${lowerUserId}`}">{{ staffFullName }}</router-link><br>
       <span class="secondary">{{ result.position_title }}</span>
     </td>
-    <td>{{ formattedPhone }}</td>
+    <td class="centered">{{ formattedPhone }}</td>
     <td>
       {{ result.sect }}<br>
       <span class="secondary">{{ result.bran }}</span>
@@ -35,6 +35,9 @@ export default {
 </script>
 
 <style scoped>
+.centered {
+  text-align: center;
+}
 .secondary {
   font-size: 14px;
 }
