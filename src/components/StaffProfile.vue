@@ -90,6 +90,9 @@ export default {
   },
   created() {
     this.loadProfile();
+    if (this.requireHashchangePopstatePatch()) {
+      window.addEventListener('hashchange', this.callOnHashChange);
+    }
   },
   watch: {
     $route: 'loadProfile',
@@ -116,6 +119,18 @@ export default {
         console.error(err); // eslint-disable-line
         this.errors.push(err);
       }
+    },
+    callOnHashChange() {
+      if (window.location.hash.indexOf('=') > -1) {
+        const queryString = window.location.hash.split('=')[1].trim();
+        // this.$router.push({ path: '/', query: { q: queryString } });
+        this.$parent.searchQuery = queryString;
+        this.$parent.query = queryString;
+        this.$parent.searchForStaff();
+      }
+    },
+    requireHashchangePopstatePatch() {
+      return navigator.userAgent.match(/Trident.*rv[ :]*11\./);
     },
   },
   computed: {
