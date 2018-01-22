@@ -3,9 +3,13 @@
     <h3>Details</h3>
     <div id="profileTable">
       <section>
-        <p id="messageArea" v-if="errors && errors.length">
-          {{ errors }}
-        </p>
+        <div id="messageArea" v-if="errors && errors.length">
+          <p><strong>Sorry, an error occurred...</strong><p>
+          <p v-for="error in errors" :key="error.response.data.message">
+          Status: {{ error.response.status }} {{ error.response.statusText }}<br>
+          Message: {{ error.response.data.message }}
+          </p>
+        </div>
         <table style="width: 100%;">
           <tbody>
             <tr>
@@ -55,7 +59,7 @@
             </tr>
             <tr>
               <td class="heading">Location</td>
-              <td>{{ profile.location_name }}</td>
+              <td>{{ profile.sublocation_name }}, {{ profile.location_name }}</td>
             </tr>
           </tbody>
         </table>

@@ -11,9 +11,16 @@
     <div id="searchResults" v-if="query && query.length">
       <h3>Search results for "{{ query }}"</h3>
       <section>
-        <p id="messageArea" v-if="errors && errors.length">
-          {{ errors }}
-        </p>
+        <div v-if="results.length == 0">
+          <p>Sorry, no staff members found. Please search again.</p>
+        </div>
+        <div id="messageArea" v-if="errors && errors.length">
+          <p><strong>Sorry, an error occurred...</strong><p>
+          <p v-for="error in errors" :key="error.response.data.message">
+          Status: {{ error.response.status }} {{ error.response.statusText }}<br>
+          Message: {{ error.response.data.message }}
+          </p>
+        </div>
         <table style="width: 100%;">
             <thead>
                 <tr>
@@ -44,6 +51,7 @@
 
 <script>
 import Axios from 'axios';
+import sortBy from 'lodash/sortBy';
 import ResultRow from './ResultRow';
 
 const baseApiUrl = process.env.API_BASE_URL;
@@ -71,7 +79,7 @@ export default {
       const queryUrl = `${baseApiUrl}/census/employees/search?q=${this.query}`;
       try {
         const response = await Axios.get(queryUrl);
-        this.results = response.data;
+        this.results = sortBy(response.data, ['surname', 'preferred_name']);
         // console.dir(this.results); // eslint-disable-line
       } catch (err) {
         console.error(err); // eslint-disable-line
