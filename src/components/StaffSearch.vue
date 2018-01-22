@@ -9,9 +9,10 @@
       </form>
     </div>
     <div id="searchResults" v-if="query && query.length">
-      <h3>Search results for "{{ query }}"</h3>
+      <h3 v-if="searching === true">Searching, please wait...</h3>
+      <h3 v-if="searching === false">Search results for "{{ query }}"</h3>
       <section>
-        <div v-if="results.length == 0">
+        <div v-if="searching === false && results.length == 0">
           <p>Sorry, no staff members found. Please search again.</p>
         </div>
         <div id="messageArea" v-if="errors && errors.length">
@@ -21,7 +22,7 @@
           Message: {{ error.response.data.message }}
           </p>
         </div>
-        <table style="width: 100%;">
+        <table v-if="results.length > 0" style="width: 100%;">
             <thead>
                 <tr>
                     <th style="width: 25%;">Name &amp; Position</th>
@@ -64,7 +65,13 @@ export default {
       query: '',
       results: [],
       errors: [],
+      searching: false,
     };
+  },
+  created() {
+    if (this.requireHashchangePopstatePatch()) {
+      window.addEventListener('hashchange', this.callOnHashChange);
+    }
   },
   watch: {
     $route: 'queryFromUrl',
@@ -76,12 +83,14 @@ export default {
   },
   methods: {
     async searchForStaff() {
+      this.searching = true;
       const queryUrl = `${baseApiUrl}/census/employees/search?q=${this.query}`;
       try {
         const response = await Axios.get(queryUrl);
         this.results = sortBy(response.data, ['surname', 'preferred_name']);
-        // console.dir(this.results); // eslint-disable-line
+        this.searching = false;
       } catch (err) {
+        this.searching = false;
         console.error(err); // eslint-disable-line
         this.errors.push(err);
       }
@@ -96,6 +105,17 @@ export default {
     updateQuery() {
       this.query = this.searchQuery;
       this.$router.push({ path: '/', query: { q: this.query } });
+    },
+    callOnHashChange() {
+      if (window.location.hash.indexOf('=') > -1) {
+        const queryString = window.location.hash.split('=')[1].trim();
+        this.searchQuery = queryString;
+        this.query = queryString;
+        this.searchForStaff();
+      }
+    },
+    requireHashchangePopstatePatch() {
+      return navigator.userAgent.match(/Trident.*rv[ :]*11\./);
     },
   },
   components: {
