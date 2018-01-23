@@ -105,7 +105,6 @@ export default {
         // This is not how it should work, but
         // don't know why async computed properties
         // are REFUSING to work  >:-|
-        // console.dir(response.data); // eslint-disable-line
         const rawProfile = response.data;
         rawProfile.formattedEmail = rawProfile.email.toLowerCase();
         const upcaseSurname = rawProfile.surname.toUpperCase();
@@ -123,10 +122,10 @@ export default {
     callOnHashChange() {
       if (window.location.hash.indexOf('=') > -1) {
         const queryString = window.location.hash.split('=')[1].trim();
-        // this.$router.push({ path: '/', query: { q: queryString } });
-        this.$parent.searchQuery = queryString;
-        this.$parent.query = queryString;
-        this.$parent.searchForStaff();
+        this.$router.push({ path: '/', query: { q: queryString } });
+      } else if (window.location.hash.indexOf('person') > -1) {
+        const param = window.location.hash.split('/')[2].trim();
+        this.$router.push({ path: `/person/${param}` });
       }
     },
     requireHashchangePopstatePatch() {
