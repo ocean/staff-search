@@ -77,8 +77,6 @@ export default {
     $route: 'queryFromUrl',
   },
   mounted() {
-    // this.getQueryString();
-    // Or will the Vue router do this for me?
     this.queryFromUrl();
   },
   methods: {
@@ -87,8 +85,8 @@ export default {
       const queryUrl = `${baseApiUrl}/census/employees/search?q=${this.query}`;
       try {
         const response = await Axios.get(queryUrl);
-        this.results = sortBy(response.data, ['surname', 'preferred_name']);
         this.searching = false;
+        this.results = sortBy(response.data, ['surname', 'preferred_name']);
       } catch (err) {
         this.searching = false;
         console.error(err); // eslint-disable-line
