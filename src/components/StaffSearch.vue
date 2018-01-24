@@ -12,7 +12,7 @@
       <h3 v-if="searching === true">Searching, please wait...</h3>
       <h3 v-if="searching === false">Search results for "{{ query }}"</h3>
       <section>
-        <div v-if="searching === false && results.length == 0">
+        <div v-if="searching === false && staffResults.length == 0">
           <p>Sorry, no staff members found. Please search again.</p>
         </div>
         <div id="messageArea" v-if="errors && errors.length">
@@ -22,7 +22,7 @@
           Message: {{ error.response.data.message }}
           </p>
         </div>
-        <table v-if="results.length > 0" style="width: 100%;">
+        <table v-if="staffResults.length > 0" style="width: 100%;">
             <thead>
                 <tr>
                     <th style="width: 25%;">Name &amp; Position</th>
@@ -32,17 +32,41 @@
                 </tr>
             </thead>
             <tbody id="listContents">
-              <tr
+              <!-- <tr
                 is="result-row"
-                v-for="result in results"
+                v-for="result in staffResults"
                 :key="result.userid"
                 v-bind:result="result"
-              ></tr>
-              <!-- <result-row
-                v-for="result in results"
+              ></tr> -->
+              <staff-result-row
+                v-for="result in staffResults"
                 :key="result.userid"
                 v-bind:result="result"
-              ></result-row> -->
+              ></staff-result-row>
+            </tbody>
+        </table>
+      </section>
+      <hr>
+      <section>
+        <div v-if="searching === false && organisationResults.length == 0">
+          <p>Sorry, no business units found for this search.</p>
+        </div>
+        <table v-if="organisationResults.length > 0" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Group</th>
+                    <th style="width: 20%;">Division</th>
+                    <th style="width: 20%;">Directorate</th>
+                    <th style="width: 20%;">Branch</th>
+                    <th style="width: 20%;">Section</th>
+                </tr>
+            </thead>
+            <tbody id="organisationlistContents">
+              <organisation-result-row
+                v-for="(result, index) in organisationResults"
+                :key="index"
+                v-bind:result="result"
+              ></organisation-result-row>
             </tbody>
         </table>
       </section>
@@ -53,7 +77,8 @@
 <script>
 import Axios from 'axios';
 import sortBy from 'lodash/sortBy';
-import ResultRow from './ResultRow';
+import StaffResultRow from './StaffResultRow';
+import OrganisationResultRow from './OrganisationResultRow';
 
 const baseApiUrl = process.env.API_BASE_URL;
 
@@ -63,30 +88,38 @@ export default {
     return {
       searchQuery: '',
       query: '',
-      results: [],
+      staffResults: [],
+      organisationResults: [],
       errors: [],
       searching: false,
     };
+  },
+  components: {
+    StaffResultRow,
+    OrganisationResultRow,
   },
   created() {
     if (this.requireHashchangePopstatePatch()) {
       window.addEventListener('hashchange', this.callOnHashChange);
     }
   },
-  watch: {
-    $route: 'queryFromUrl',
-  },
   mounted() {
     this.queryFromUrl();
+  },
+  watch: {
+    $route: 'queryFromUrl',
   },
   methods: {
     async searchForStaff() {
       this.searching = true;
-      const queryUrl = `${baseApiUrl}/census/employees/search?q=${this.query}`;
+      const staffQueryUrl = `${baseApiUrl}/census/employees/search?q=${this.query}`;
+      const organisationQueryUrl = `${baseApiUrl}/census/organisation/search?q=${this.query}`;
       try {
-        const response = await Axios.get(queryUrl);
+        const staffResponse = await Axios.get(staffQueryUrl);
+        const organisationResponse = await Axios.get(organisationQueryUrl);
         this.searching = false;
-        this.results = sortBy(response.data, ['surname', 'preferred_name']);
+        this.staffResults = sortBy(staffResponse.data, ['surname', 'preferred_name']);
+        this.organisationResults = organisationResponse.data;
       } catch (err) {
         this.searching = false;
         console.error(err); // eslint-disable-line
@@ -115,9 +148,6 @@ export default {
     requireHashchangePopstatePatch() {
       return navigator.userAgent.match(/Trident.*rv[ :]*11\./);
     },
-  },
-  components: {
-    ResultRow,
   },
 };
 </script>

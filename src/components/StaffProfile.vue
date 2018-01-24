@@ -23,7 +23,7 @@
             </tr>
             <tr>
               <td class="heading">Phone</td>
-              <td>{{ profile.formattedPhone }}</td>
+              <td><span v-html="profile.formattedPhone"></span></td>
             </tr>
             <tr v-if="profile.mobile">
               <td class="heading">Mobile</td>
@@ -106,12 +106,18 @@ export default {
         // don't know why async computed properties
         // are REFUSING to work  >:-|
         const rawProfile = response.data;
-        rawProfile.formattedEmail = rawProfile.email.toLowerCase();
-        const upcaseSurname = rawProfile.surname.toUpperCase();
+        rawProfile.formattedEmail = rawProfile.email.trim().toLowerCase();
+        const upcaseSurname = rawProfile.surname.trim().toUpperCase();
         rawProfile.formattedName = `${upcaseSurname}, ${rawProfile.preferred_name}`;
-        const rawPhone = rawProfile.phone;
-        rawProfile.formattedPhone = `${rawPhone.slice(-16, -12)} ${rawPhone.slice(-12, -8)} ${rawPhone.slice(-8, -4)} ${rawPhone.slice(-4)}`;
-        const rawMobile = rawProfile.mobile;
+        const rawPhone = rawProfile.phone.trim();
+        let formattedPhone = rawProfile.phone.trim();
+        if (rawPhone.length === 16) {
+          formattedPhone = `${rawPhone.slice(-16, -12)} ${rawPhone.slice(-12, -8)}<br>${rawPhone.slice(-8, -4)} ${rawPhone.slice(-4)}`;
+        } else if (rawPhone.length === 8) {
+          formattedPhone = `${rawPhone.slice(-8, -4)} ${rawPhone.slice(-4)}`;
+        }
+        rawProfile.formattedPhone = formattedPhone;
+        const rawMobile = rawProfile.mobile.trim();
         rawProfile.formattedMobile = `${rawMobile.slice(0, 4)} ${rawMobile.slice(4, 7)} ${rawMobile.slice(7)}`;
         this.profile = rawProfile;
       } catch (err) {
