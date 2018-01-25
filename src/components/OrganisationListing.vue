@@ -27,7 +27,7 @@
               ></staff-result-row>
             </tbody>
         </table>
-        <!-- <p><a href="javascript:history.back();">&lt;- Back to search</a></p> -->
+        <p><a href="javascript:history.back();">&lt;- Back to search</a></p>
       </section>
     </div>
   </div>
@@ -67,22 +67,19 @@ export default {
   },
   methods: {
     queryFromUrl() {
-      // console.dir(this.$route.query); // eslint-disable-line
-      // console.dir(this.query); // eslint-disable-line
       if (this.$route.query) {
         this.query = this.$route.query;
         this.loadListing();
       }
     },
     async loadListing() {
-      const queryAsArray = Object.entries(this.query);
-      // console.dir(queryAsArray); // eslint-disable-line
-      const queryAsString = `${queryAsArray[0][0]}=${encodeURI(queryAsArray[0][1])}`;
-      // console.dir(queryAsString); // eslint-disable-line
-      console.dir(window.location); // eslint-disable-line
-      const searchUrl = `${baseApiUrl}/census/employees?${queryAsString}`;
+      const queryURLParams = new URLSearchParams(this.query);
+      const fetcher = Axios.create({
+        baseURL: baseApiUrl,
+        params: queryURLParams,
+      });
       try {
-        const response = await Axios.get(searchUrl);
+        const response = await fetcher.get('/census/employees');
         this.staffResults = response.data.results;
       } catch (err) {
         console.error(err); // eslint-disable-line
@@ -90,12 +87,16 @@ export default {
       }
     },
     callOnHashChange() {
-      if (window.location.hash.indexOf('=') > -1) {
+      if (window.location.hash.indexOf('q=') > -1) {
         const queryString = window.location.hash.split('=')[1].trim();
         this.$router.push({ path: '/', query: { q: queryString } });
       } else if (window.location.hash.indexOf('person') > -1) {
         const param = window.location.hash.split('/')[2].trim();
         this.$router.push({ path: `/person/${param}` });
+      } else if (window.location.hash.indexOf('organisation') > -1) {
+        const queryKey = window.location.hash.split('?')[1].split('=')[0];
+        const queryValue = window.location.hash.split('?')[1].split('=')[1];
+        this.$router.push({ path: `/organisation?${queryKey}=${queryValue}` });
       }
     },
     requireHashchangePopstatePatch() {

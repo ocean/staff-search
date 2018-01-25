@@ -76,7 +76,6 @@
 
 <script>
 import Axios from 'axios';
-import sortBy from 'lodash/sortBy';
 import StaffResultRow from './StaffResultRow';
 import OrganisationResultRow from './OrganisationResultRow';
 
@@ -112,13 +111,33 @@ export default {
   methods: {
     async searchForStaff() {
       this.searching = true;
-      const staffQueryUrl = `${baseApiUrl}/census/employees/search?q=${this.query}`;
-      const organisationQueryUrl = `${baseApiUrl}/census/organisation/search?q=${this.query}`;
+      const fetcher = Axios.create({
+        baseURL: baseApiUrl,
+        params: {
+          q: this.query,
+        },
+      });
       try {
-        const staffResponse = await Axios.get(staffQueryUrl);
-        const organisationResponse = await Axios.get(organisationQueryUrl);
+        const staffResponse = await fetcher.get('/census/employees/search');
         this.searching = false;
-        this.staffResults = sortBy(staffResponse.data, ['surname', 'preferred_name']);
+        this.staffResults = staffResponse.data;
+      } catch (err) {
+        this.searching = false;
+        console.error(err); // eslint-disable-line
+        this.errors.push(err);
+      }
+    },
+    async searchForOrganisation() {
+      this.searching = true;
+      const fetcher = Axios.create({
+        baseURL: baseApiUrl,
+        params: {
+          q: this.query,
+        },
+      });
+      try {
+        const organisationResponse = await fetcher.get('/census/organisation/search');
+        this.searching = false;
         this.organisationResults = organisationResponse.data;
       } catch (err) {
         this.searching = false;
@@ -131,6 +150,7 @@ export default {
         this.query = this.$route.query.q.trim();
         this.searchQuery = this.query;
         this.searchForStaff();
+        this.searchForOrganisation();
       }
     },
     updateQuery() {
@@ -143,6 +163,7 @@ export default {
         this.searchQuery = queryString;
         this.query = queryString;
         this.searchForStaff();
+        this.searchForOrganisation();
       }
     },
     requireHashchangePopstatePatch() {

@@ -16,15 +16,6 @@ export default {
       required: true,
     },
   },
-  // computed: {
-  //   staffFullName() {
-  //     const upcaseSurname = this.result.surname.toUpperCase();
-  //     return `${upcaseSurname}, ${this.result.preferred_name}`;
-  //   },
-  //   lowerUserId() {
-  //     return this.result.userid.toLowerCase();
-  //   },
-  // },
 };
 </script>
 

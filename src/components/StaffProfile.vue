@@ -35,19 +35,27 @@
             </tr>
             <tr v-if="profile.div">
               <td class="heading">Division</td>
-              <td>{{ profile.div }}</td>
+              <td>
+                <router-link :to="{ path: '/organisation', query: { div: profile.div }}">{{ profile.div }}</router-link>
+              </td>
             </tr>
             <tr v-if="profile.directorate">
               <td class="heading">Directorate</td>
-              <td>{{ profile.directorate }}</td>
+              <td>
+                <router-link :to="{ path: '/organisation', query: { directorate: profile.directorate }}">{{ profile.directorate }}</router-link>
+              </td>
             </tr>
             <tr v-if="profile.bran">
               <td class="heading">Branch</td>
-              <td>{{ profile.bran }}</td>
+              <td>
+                <router-link :to="{ path: '/organisation', query: { bran: profile.bran }}">{{ profile.bran }}</router-link>
+              </td>
             </tr>
             <tr v-if="profile.sect">
               <td class="heading">Section</td>
-              <td>{{ profile.sect }}</td>
+              <td>
+                <router-link :to="{ path: '/organisation', query: { sect: profile.sect }}">{{ profile.sect }}</router-link>
+              </td>
             </tr>
             <tr v-if="profile.team">
               <td class="heading">Team</td>
@@ -99,9 +107,11 @@ export default {
   },
   methods: {
     async loadProfile() {
-      const profileUrl = `${baseApiUrl}/census/employee/${this.userid}`;
+      const fetcher = Axios.create({
+        baseURL: baseApiUrl,
+      });
       try {
-        const response = await Axios.get(profileUrl);
+        const response = await fetcher.get(`/census/employee/${this.userid}`);
         // This is not how it should work, but
         // don't know why async computed properties
         // are REFUSING to work  >:-|
@@ -126,12 +136,16 @@ export default {
       }
     },
     callOnHashChange() {
-      if (window.location.hash.indexOf('=') > -1) {
+      if (window.location.hash.indexOf('q=') > -1) {
         const queryString = window.location.hash.split('=')[1].trim();
         this.$router.push({ path: '/', query: { q: queryString } });
       } else if (window.location.hash.indexOf('person') > -1) {
         const param = window.location.hash.split('/')[2].trim();
         this.$router.push({ path: `/person/${param}` });
+      } else if (window.location.hash.indexOf('organisation') > -1) {
+        const queryKey = window.location.hash.split('?')[1].split('=')[0];
+        const queryValue = window.location.hash.split('?')[1].split('=')[1];
+        this.$router.push({ path: `/organisation?${queryKey}=${queryValue}` });
       }
     },
     requireHashchangePopstatePatch() {
