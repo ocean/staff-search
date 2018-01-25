@@ -48,7 +48,7 @@
       </section>
       <section>
         <div v-if="searching === false && organisationResults.length == 0">
-          <p>Sorry, no business units found for this search.</p>
+          <p>No business units found for this search.</p>
         </div>
         <table v-if="organisationResults.length > 0" style="width: 100%;">
             <thead>
