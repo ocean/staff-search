@@ -74,6 +74,7 @@ export default {
     },
     async loadListing() {
       const queryURLParams = new URLSearchParams(this.query);
+      queryURLParams.append('limit', '60');
       const fetcher = Axios.create({
         baseURL: baseApiUrl,
         params: queryURLParams,
