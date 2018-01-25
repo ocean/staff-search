@@ -46,7 +46,6 @@
             </tbody>
         </table>
       </section>
-      <hr>
       <section>
         <div v-if="searching === false && organisationResults.length == 0">
           <p>Sorry, no business units found for this search.</p>
