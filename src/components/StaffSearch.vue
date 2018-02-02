@@ -11,7 +11,15 @@
     <div id="searchResults" v-if="query && query.length">
       <h3 v-if="searching === true">Searching, please wait...</h3>
       <h3 v-if="searching === false">Search results for "{{ query }}"</h3>
-      <section>
+      <div id="switcher">
+        <a href="#staffSearchResults" class="staffSearchResults activeTitle" @click="switchTabs('staffSearchResults')" v-on:click.prevent>
+          <h4>Staff search results ({{ staffResults.length }})</h4>
+        </a>
+        <a href="#organisationSearchResults" class="organisationSearchResults" @click="switchTabs('organisationSearchResults')" v-on:click.prevent>
+          <h4>Organisation search results ({{ organisationResults.length }})</h4>
+        </a>
+      </div>
+      <section id="staffSearchResults" class="active">
         <div v-if="searching === false && staffResults.length == 0">
           <p>Sorry, no staff members found. Please search again.</p>
         </div>
@@ -46,7 +54,7 @@
             </tbody>
         </table>
       </section>
-      <section>
+      <section id="organisationSearchResults" class="inactive">
         <div v-if="searching === false && organisationResults.length == 0">
           <p>No business units found for this search.</p>
         </div>
@@ -168,6 +176,22 @@ export default {
     requireHashchangePopstatePatch() {
       return navigator.userAgent.match(/Trident.*rv[ :]*11\./);
     },
+    switchTabs: (tabName) => {
+      const previousTab = document.getElementsByClassName('active')[0];
+      const previousTabTitle = document.getElementById('switcher').getElementsByClassName(previousTab.id)[0];
+      const activeTab = document.getElementById(tabName);
+      const activeTabTitle = document.getElementById('switcher').getElementsByClassName(tabName)[0];
+      if (previousTab !== activeTab) {
+        previousTab.setAttribute('class', 'inactive');
+        previousTabTitle.setAttribute('class', `${previousTab.id}`);
+        // console.dir(previousTab); // eslint-disable-line
+        // console.dir(previousTabTitle); // eslint-disable-line
+        activeTab.setAttribute('class', 'active');
+        activeTabTitle.setAttribute('class', `${tabName} activeTitle`);
+        // console.dir(activeTab); // eslint-disable-line
+        // console.dir(activeTabTitle); // eslint-disable-line
+      }
+    },
   },
 };
 </script>
@@ -208,5 +232,27 @@ tbody td {
 }
 #searchForm input {
   font-size: 1.25em;
+}
+#switcher {
+  margin-bottom: 5px;
+}
+#switcher h4 {
+  display: inline;
+  color: #2c3e50;
+}
+#switcher a {
+  background-color: #eeeeee;
+  border: 1px solid #cccccc;
+  border-bottom: 0;
+  margin-right: 20px;
+  padding: 6px 20px 5px 20px;
+  text-decoration: unset;
+}
+#switcher .activeTitle {
+  background-color: #cccccc;
+  text-decoration: underline;
+}
+section.inactive {
+  display: none;
 }
 </style>
