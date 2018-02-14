@@ -19,7 +19,10 @@
             </tr>
             <tr>
               <td class="heading">Email</td>
-              <td><a v-bind:href="'mailto:' + profile.formattedEmail">{{ profile.formattedEmail }}</a></td>
+              <td>
+                <a v-bind:href="'mailto:' + profile.formattedEmail">{{ profile.formattedEmail }}</a>
+                <span v-if="generatedEmail">**</span>
+              </td>
             </tr>
             <tr>
               <td class="heading">Phone</td>
@@ -71,6 +74,7 @@
             </tr>
           </tbody>
         </table>
+        <span v-if="generatedEmail"><small><em>** Note: this email address is missing from the supplied staff data, so it has been auto-generated.</em></small></span>
         <p><a href="javascript:history.back();">&lt;- Back to search</a></p>
       </section>
     </div>
@@ -87,6 +91,7 @@ export default {
   data() {
     return {
       profile: [],
+      generatedEmail: false,
       errors: [],
     };
   },
@@ -116,9 +121,10 @@ export default {
         // don't know why async computed properties
         // are REFUSING to work  >:-|
         const rawProfile = response.data;
-        rawProfile.formattedEmail = rawProfile.email.trim().toLowerCase();
+        // rawProfile.formattedEmail = rawProfile.email.trim().toLowerCase();
+        rawProfile.formattedEmail = this.emailAddressHandler(rawProfile);
         const upcaseSurname = rawProfile.surname.trim().toUpperCase();
-        rawProfile.formattedName = `${upcaseSurname}, ${rawProfile.preferred_name}`;
+        rawProfile.formattedName = `${upcaseSurname}, ${rawProfile.preferred_name.trim()}`;
         const rawPhone = rawProfile.phone.trim();
         let formattedPhone = rawProfile.phone.trim();
         if (rawPhone.length === 16) {
@@ -134,6 +140,16 @@ export default {
         console.error(err); // eslint-disable-line
         this.errors.push(err);
       }
+    },
+    emailAddressHandler(profileData) {
+      if (profileData.email.trim().length > 0) {
+        // return included email address
+        return profileData.email.trim().toLowerCase();
+      }
+      // generate email address from names
+      const generated = `${profileData.preferred_name.trim().toLowerCase()}.${profileData.surname.trim().toLowerCase()}@dmirs.wa.gov.au`;
+      this.generatedEmail = true;
+      return generated;
     },
     callOnHashChange() {
       if (window.location.hash.indexOf('q=') > -1) {
