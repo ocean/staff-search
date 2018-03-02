@@ -70,7 +70,8 @@
             </tr>
             <tr>
               <td class="heading">Location</td>
-              <td>{{ profile.sublocation_name }}, {{ profile.location_name }}</td>
+              <td v-if="profile.sublocation_name">{{ profile.sublocation_name }}, {{ profile.location_name }}</td>
+              <td v-else>{{ profile.location_name }}</td>
             </tr>
           </tbody>
         </table>
