@@ -9,6 +9,6 @@ describe('StaffSearch.vue', () => {
     const Constructor = Vue.extend(StaffSearch);
     const vm = new Constructor().$mount();
     expect(vm.$el.querySelector('.staffSearch label'))
-    .toBeTruthy();
+      .toBeTruthy();
   });
 });
