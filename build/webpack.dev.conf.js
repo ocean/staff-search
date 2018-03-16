@@ -15,6 +15,7 @@ const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
 const devWebpackConfig = merge(baseWebpackConfig, {
+  mode: 'development',
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
   },
@@ -51,8 +52,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     }),
     new DashboardPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
-    new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       filename: 'index.html',
@@ -67,7 +66,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ])
-  ]
+  ],
+  optimization: {
+    namedModules: true,
+    noEmitOnErrors: true,
+  },
 })
 
 module.exports = new Promise((resolve, reject) => {
